@@ -37,7 +37,7 @@ df %>%
   geom_histogram(alpha = .4)
 
 
-# Can I cap it off a little just to get a better picture of the price vairable?
+# Can I cap it off a little just to get a better picture of the price variable?
 # Maybe there is something else we need to look at
 price_cap <- quantile(df$price, .99)
 
@@ -64,11 +64,31 @@ df %>%
 #   your team will likely need to look fairly carefully at each of the columns in 
 #   order to identify any lurking issues and know which columns to highlight, etc.)
 
-df %>% summarize(across(everything(), list(mean = ~mean(.x), 
-                                           sd = ~sd(.x),
-                                           min = ~min(.x),
-                                           max = ~max(.x))))
+propertysqft_summary <- df %>% 
+  summarize(mean = mean(propertysqft),
+            median = median(propertysqft),
+            sd = sd(propertysqft),
+            min = min(propertysqft),
+            max = max(propertysqft)
+  )
 
+# The propertysqft column is skewed as well
+df %>% 
+  ggplot(aes(x = propertysqft)) +
+  geom_density(alpha = .4) +
+  theme_bw()
+# Count unique brokers
+brokers <- df %>% 
+  count(brokertitle)
+# Count type of properties
+type_cat <- df %>% 
+  count(type)
+# Count of property bedroom counts
+beds <- df %>% 
+  count(beds)
+# Count of property bathroom counts
+baths <- df %>% 
+  count(bath)
 # (5 points) Perform an initial analysis in which you systematically examine each 
 # independent variable as it relates to your dependent variable. This will provide
 # your group with an initial idea of which (if any) variable jump out as especially 
