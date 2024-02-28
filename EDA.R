@@ -175,7 +175,6 @@ df %>%
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
-=======
 # Lets analyze the price by the type of property
 type_price <- df %>% 
   group_by(type) %>% 
