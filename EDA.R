@@ -106,3 +106,23 @@ baths <- df %>%
   # (in terms of rate, frequency, average, etc.) at different levels of that category. 
   # Summarize anything you find particularly interesting or relevant using an appropriate 
   # visualization.
+
+# Lets analyze the price by the type of property
+type_price <- df %>% 
+  group_by(type) %>% 
+  summarize(mean = mean(price),
+            median = median(price),
+            sd = sd(price),
+            min = min(price),
+            max = max(price)
+  )
+
+# Create a boxplot of price by property type to see distributions. 
+# We're going to exclude the listings that have prices above the price cap
+df %>% 
+  mutate(price = if_else(price > price_cap, price_cap, price)) %>% 
+  ggplot(aes(x = type,
+             y = price)) +
+  geom_boxplot() +
+  theme_bw()
+  
