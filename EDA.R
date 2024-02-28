@@ -1,4 +1,6 @@
 library(tidyverse)
+library(dplyr)
+library(ggplot2)
 
 df <- read_csv('https://www.dropbox.com/scl/fi/zmvcst0q4s3p4bqi5ybqy/15_train.csv?rlkey=rb3r4i2uid0dsdg59otloissq&dl=1')
 
@@ -112,9 +114,37 @@ df %>%
   # - For numeric (continuous) variables, this will likely involve looking at correlations
   # or something similar in order to identify variables (if any) that are likely related 
   # to your dependent variable. Any particularly interesting continuous variables may
-  # deserve a scatterplot or some other visual demonstration of the relationship.
+  # deserve a scatterplot or some other visual demonstration of the relationship
 
-  # For categorical variables, this will involve looking at the pattern of the dependent
+df %>%
+  select(beds, bath, propertysqft, price) %>%
+  cor()
+
+# Price vs Bed Scatterplot
+
+ggplot(df, aes(x = beds, y = price)) +
+  geom_point(aes(color = bath), size = 3) +
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(x = "No. of Bedrooms", 
+       y = "Price", 
+       color = "No. of Bathrooms") +
+  ggtitle("Price vs Bedrooms") + 
+  theme_bw()
+
+#broker title - price (cor)
+
+# Broker title Summary statistics
+bokertitle_summary <- df %>%
+  group_by(brokertitle) %>%
+  summarise(
+    mean_price = mean(price),
+    median_price = median(price),
+    min_price = min(price),
+    max_price = max(price)
+  )
+
+
+# For categorical variables, this will involve looking at the pattern of the dependent
   # variable at various levels of the category. This will look different depending on your 
   # dependent variable, but what you’re looking to do is highlight any categorical variables 
   # where the dependent variable appears “different”
@@ -124,10 +154,6 @@ df %>%
 
 
 cor(df$price, df$propertysqft, method="pearson")
-
-  
-  
-
 
 # Finding correlations between numeric values
 df %>%
@@ -149,3 +175,22 @@ df %>%
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
+=======
+# Lets analyze the price by the type of property
+type_price <- df %>% 
+  group_by(type) %>% 
+  summarize(mean = mean(price),
+            median = median(price),
+            sd = sd(price),
+            min = min(price),
+            max = max(price)
+  )
+
+# Create a boxplot of price by property type to see distributions. 
+# We're going to exclude the listings that have prices above the price cap
+df %>% 
+  mutate(price = if_else(price > price_cap, price_cap, price)) %>% 
+  ggplot(aes(x = type,
+             y = price)) +
+  geom_boxplot() +
+  theme_bw()
