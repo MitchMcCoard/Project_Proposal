@@ -91,6 +91,21 @@ beds <- df %>%
 # Count of property bathroom counts
 baths <- df %>% 
   count(bath)
+
+df %>% 
+  count(brokers)
+
+df %>% 
+  glimpse()
+df %>% 
+  mutate(bedBathDiff = (beds - bath)) %>% 
+  filter(abs( bedBathDiff) > 10) %>% 
+  print(n=20)
+
+
+df %>% 
+  filter(!str_detect( brokertitle, 'Broker') ) -> noBroker
+
 # (5 points) Perform an initial analysis in which you systematically examine each 
 # independent variable as it relates to your dependent variable. This will provide
 # your group with an initial idea of which (if any) variable jump out as especially 
@@ -137,6 +152,30 @@ bokertitle_summary <- df %>%
   # Summarize anything you find particularly interesting or relevant using an appropriate 
   # visualization.
 
+
+cor(df$price, df$propertysqft, method="pearson")
+
+# Finding correlations between numeric values
+df %>%
+  summarize(across(is.numeric, list(correlation_with_price = ~cor(.x, price, method = "pearson")))) %>%
+  pivot_longer(cols = everything()) %>% 
+  print(n=30)
+
+
+# (scatter plot) How does sublocality look, could it be used to group as neighborhoods?
+df %>% select(price, address:longitude) %>% 
+  ggplot(aes(x = longitude, y = latitude, color = sublocality)) +
+  geom_point()
+
+# (boxplot) How does sublocality relate to price? Note I'm capping price to help with visibility
+df %>%
+  select(price, address:longitude) %>%
+  mutate(price = if_else(price > price_cap, price_cap, price)) %>%
+  ggplot(aes(y = price, x = sublocality)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+
+=======
 # Lets analyze the price by the type of property
 type_price <- df %>% 
   group_by(type) %>% 
